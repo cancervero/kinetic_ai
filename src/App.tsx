@@ -1,32 +1,151 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { CameraFeed, PoseOverlayCanvas, RepCounter } from '@/components';
+import { ProfileSelection } from '@/components/profile/ProfileSelection';
+import { CalibrationFlow } from '@/components/calibration/CalibrationFlow';
+import { ExerciseSelection } from '@/components/exercise/ExerciseSelection';
 import { usePoseDetection, useRepCounter } from '@/hooks';
 import { ExerciseType } from '@/lib/rep';
 import { SKELETON_EDGES } from '@/lib/pose/rendering';
+import {
+  getCurrentProfile,
+  updateCalibration,
+  clearCurrentProfile,
+  type UserProfile,
+} from '@/lib/storage/profile-storage';
+import type { CalibrationProfile } from '@/lib/pose/calibration';
+
+type AppState =
+  | 'profile-selection'
+  | 'calibration'
+  | 'exercise-selection'
+  | 'exercising';
 
 export function App() {
-  const [exercise, setExercise] = useState<ExerciseType>('squat');
+  const [appState, setAppState] = useState<AppState>('profile-selection');
+  const [currentProfile, setCurrentProfile] = useState<UserProfile | null>(
+    null
+  );
+  const [exercise, setExercise] = useState<ExerciseType | null>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const [isReady, setIsReady] = useState(false);
 
   const { pose, loading } = usePoseDetection(videoRef, isReady);
-  const repCount = useRepCounter(pose, exercise);
+  const repCount = useRepCounter(
+    pose,
+    exercise ?? 'squat',
+    currentProfile?.calibration?.squatThresholds
+  );
 
-  const handleVideoRef = (ref: React.RefObject<HTMLVideoElement>) => {
-    if (ref.current && videoRef.current !== ref.current) {
-      (videoRef as React.MutableRefObject<HTMLVideoElement | null>).current = ref.current;
+  useEffect(() => {
+    const profile = getCurrentProfile();
+    if (profile) {
+      setCurrentProfile(profile);
+      if (profile.calibration) {
+        setAppState('exercise-selection');
+      } else {
+        setAppState('calibration');
+      }
+    } else {
+      setAppState('profile-selection');
+    }
+  }, []);
+
+  const handleProfileSelected = (profile: UserProfile) => {
+    setCurrentProfile(profile);
+    if (profile.calibration) {
+      setAppState('exercise-selection');
+    } else {
+      setAppState('calibration');
     }
   };
 
+  const handleCalibrationComplete = (calibration: CalibrationProfile) => {
+    if (currentProfile) {
+      updateCalibration(currentProfile.alias, calibration);
+      setCurrentProfile({ ...currentProfile, calibration });
+      setAppState('exercise-selection');
+    }
+  };
+
+  const handleCalibrationCancel = () => {
+    clearCurrentProfile();
+    setCurrentProfile(null);
+    setAppState('profile-selection');
+  };
+
+  const handleExerciseSelected = (selectedExercise: ExerciseType) => {
+    setExercise(selectedExercise);
+    setAppState('exercising');
+  };
+
+  const handleChangeProfile = () => {
+    clearCurrentProfile();
+    setCurrentProfile(null);
+    setExercise(null);
+    setAppState('profile-selection');
+  };
+
+  const handleVideoRef = (ref: React.RefObject<HTMLVideoElement>) => {
+    if (ref.current && videoRef.current !== ref.current) {
+      (videoRef as React.MutableRefObject<HTMLVideoElement | null>).current =
+        ref.current;
+    }
+  };
+
+  const getVideoSize = (): { width: number; height: number } => {
+    if (videoRef.current) {
+      const rect = videoRef.current.getBoundingClientRect();
+      return { width: rect.width, height: rect.height };
+    }
+    return { width: 640, height: 480 };
+  };
+
+  if (appState === 'profile-selection') {
+    return <ProfileSelection onProfileSelected={handleProfileSelected} />;
+  }
+
+  if (appState === 'calibration') {
+    const { width, height } = getVideoSize();
+    return (
+      <div className="app">
+        <div className="video-container" style={{ position: 'relative' }}>
+          <CameraFeed onVideoRef={handleVideoRef} onReady={setIsReady} />
+          {pose && (
+            <>
+              <PoseOverlayCanvas
+                keypoints={pose.keypoints}
+                edges={SKELETON_EDGES}
+                videoRef={videoRef}
+              />
+              <CalibrationFlow
+                pose={pose}
+                videoWidth={width}
+                videoHeight={height}
+                onComplete={handleCalibrationComplete}
+                onCancel={handleCalibrationCancel}
+              />
+            </>
+          )}
+        </div>
+        {loading && <LoadingIndicator />}
+      </div>
+    );
+  }
+
+  if (appState === 'exercise-selection') {
+    return (
+      <ExerciseSelection
+        onExerciseSelected={handleExerciseSelected}
+        onChangeProfile={handleChangeProfile}
+      />
+    );
+  }
+
   return (
     <div className="app">
-      <Header />
-      <ExerciseSelector current={exercise} onChange={setExercise} />
+      <Header profile={currentProfile} onChangeProfile={handleChangeProfile} />
       <div className="video-container" style={{ position: 'relative' }}>
-        <CameraFeed
-          onVideoRef={handleVideoRef}
-          onReady={setIsReady}
-        />
+        <CameraFeed onVideoRef={handleVideoRef} onReady={setIsReady} />
         {pose && (
           <PoseOverlayCanvas
             keypoints={pose.keypoints}
@@ -35,31 +154,27 @@ export function App() {
           />
         )}
       </div>
-      <RepCounter repCount={repCount} exercise={exercise} />
+      <RepCounter repCount={repCount} exercise={exercise ?? 'squat'} />
       {loading && <LoadingIndicator />}
     </div>
   );
 }
 
-function Header() {
-  return <h1 className="app-header">Kinetic AI</h1>;
-}
-
-function ExerciseSelector({
-  current,
-  onChange
+function Header({
+  profile,
+  onChangeProfile,
 }: {
-  current: ExerciseType;
-  onChange: (ex: ExerciseType) => void;
+  profile: UserProfile | null;
+  onChangeProfile: () => void;
 }) {
   return (
-    <div className="exercise-selector">
-      <button onClick={() => onChange('squat')} disabled={current === 'squat'}>
-        Sentadillas
-      </button>
-      <button onClick={() => onChange('pushup')} disabled={current === 'pushup'}>
-        Lagartijas
-      </button>
+    <div className="app-header">
+      <h1>Kinetic AI</h1>
+      {profile && (
+        <button onClick={onChangeProfile} className="profile-button">
+          {profile.alias}
+        </button>
+      )}
     </div>
   );
 }
