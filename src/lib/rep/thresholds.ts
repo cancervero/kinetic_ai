@@ -2,13 +2,13 @@ import { ExerciseType, ExerciseThresholds } from './types';
 
 const SQUAT_THRESHOLDS: ExerciseThresholds = {
   topAngle: 165,
-  bottomAngle: 100,
+  bottomAngle: 135,
   minDebounce: 100
 };
 
 const PUSHUP_THRESHOLDS: ExerciseThresholds = {
   topAngle: 170,
-  bottomAngle: 90,
+  bottomAngle: 110,
   minDebounce: 100
 };
 

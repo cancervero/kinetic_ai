@@ -16,6 +16,9 @@ export class RepStateMachine {
 
     if (this.shouldIncrement(newState)) {
       this.count++;
+    }
+
+    if (newState !== this.state) {
       this.lastTransition = timestamp;
     }
 
@@ -24,6 +27,9 @@ export class RepStateMachine {
   }
 
   private isDebounced(timestamp: number): boolean {
+    if (this.state === 'idle' && this.lastTransition === 0) {
+      return false;
+    }
     return timestamp - this.lastTransition < this.thresholds.minDebounce;
   }
 

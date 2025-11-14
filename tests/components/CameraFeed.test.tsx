@@ -27,8 +27,8 @@ describe('components/CameraFeed', () => {
     expect(video?.muted).toBe(true);
   });
 
-  it('should display error message on camera error', () => {
-    const { useCamera } = require('@/hooks');
+  it('should display error message on camera error', async () => {
+    const { useCamera } = await vi.importMock<typeof import('@/hooks')>('@/hooks');
     useCamera.mockReturnValue({
       videoRef: { current: null },
       isReady: false,
@@ -48,8 +48,8 @@ describe('components/CameraFeed', () => {
     expect(onVideoRef).toHaveBeenCalled();
   });
 
-  it('should call onReady callback when ready', () => {
-    const { useCamera } = require('@/hooks');
+  it('should call onReady callback when ready', async () => {
+    const { useCamera } = await vi.importMock<typeof import('@/hooks')>('@/hooks');
     useCamera.mockReturnValue({
       videoRef: { current: document.createElement('video') },
       isReady: true,
@@ -62,8 +62,8 @@ describe('components/CameraFeed', () => {
     expect(onReady).toHaveBeenCalledWith(true);
   });
 
-  it('should not call onReady when not ready', () => {
-    const { useCamera } = require('@/hooks');
+  it('should not call onReady when not ready', async () => {
+    const { useCamera } = await vi.importMock<typeof import('@/hooks')>('@/hooks');
     useCamera.mockReturnValue({
       videoRef: { current: null },
       isReady: false,

@@ -1,23 +1,37 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { renderHook, waitFor } from '@testing-library/react';
 import { usePoseDetection } from '@/hooks/usePoseDetection';
-import { createMockDetector, createMockVideo } from '../mockData/mocks';
-import { mockSquatTopPose } from '../mockData/poses';
-import { useRef } from 'react';
+import { createMockVideo } from '../mockData/mocks';
 
-// Mock pose loader
-vi.mock('@/lib/pose', () => ({
-  loadDetector: vi.fn().mockResolvedValue(createMockDetector()),
-  runInference: vi.fn().mockResolvedValue(mockSquatTopPose),
-  createSmoother: vi.fn(() => ({
-    smooth: vi.fn((kps) => kps)
-  })),
-  smoothPose: vi.fn((pose) => pose)
-}));
+//Mock pose module
+vi.mock('@/lib/pose', () => {
+  const mockDetector = { estimatePoses: vi.fn() };
+  const mockPose = {
+    keypoints: [],
+    score: 0.9
+  };
+
+  return {
+    loadDetector: vi.fn(() => Promise.resolve(mockDetector)),
+    runInference: vi.fn(() => Promise.resolve(mockPose)),
+    createSmoother: vi.fn(() => ({ smooth: vi.fn() })),
+    smoothPose: vi.fn((pose) => pose)
+  };
+});
 
 describe('hooks/usePoseDetection', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    // Mock requestAnimationFrame to prevent infinite loops
+    vi.stubGlobal('requestAnimationFrame', vi.fn((cb) => {
+      setTimeout(cb, 16);
+      return 1;
+    }));
+    vi.stubGlobal('cancelAnimationFrame', vi.fn());
+  });
+
+  afterEach(() => {
+    vi.unstubAllGlobals();
   });
 
   it('should initialize with loading state', () => {
@@ -30,9 +44,9 @@ describe('hooks/usePoseDetection', () => {
     expect(result.current.pose).toBeNull();
   });
 
-  it('should not load detector if not ready', () => {
-    const { loadDetector } = require('@/lib/pose');
+  it('should not load detector if not ready', async () => {
     const videoRef = { current: null };
+    const { loadDetector } = await vi.importMock<typeof import('@/lib/pose')>('@/lib/pose');
 
     renderHook(() => usePoseDetection(videoRef, false));
 
@@ -40,9 +54,9 @@ describe('hooks/usePoseDetection', () => {
   });
 
   it('should load detector when ready', async () => {
-    const { loadDetector } = require('@/lib/pose');
     const video = createMockVideo();
     const videoRef = { current: video };
+    const { loadDetector } = await vi.importMock<typeof import('@/lib/pose')>('@/lib/pose');
 
     renderHook(() => usePoseDetection(videoRef, true));
 
@@ -65,7 +79,7 @@ describe('hooks/usePoseDetection', () => {
   });
 
   it('should handle detector load failure', async () => {
-    const { loadDetector } = require('@/lib/pose');
+    const { loadDetector } = await vi.importMock<typeof import('@/lib/pose')>('@/lib/pose');
     loadDetector.mockRejectedValueOnce(new Error('Load failed'));
 
     const video = createMockVideo();
