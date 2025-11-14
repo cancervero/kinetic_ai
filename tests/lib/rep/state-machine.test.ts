@@ -3,8 +3,8 @@ import { RepStateMachine } from '@/lib/rep/state-machine';
 
 describe('rep/state-machine', () => {
   const defaultThresholds = {
-    topAngle: 170,
-    bottomAngle: 100,
+    topAngle: 160,
+    bottomAngle: 90,
     minDebounce: 100
   };
 

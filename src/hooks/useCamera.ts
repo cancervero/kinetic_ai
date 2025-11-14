@@ -2,6 +2,7 @@ import { useEffect, useRef, useState, useCallback } from 'react';
 
 export function useCamera() {
   const videoRef = useRef<HTMLVideoElement>(null);
+  const streamRef = useRef<MediaStream | null>(null);
   const [isReady, setIsReady] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -12,6 +13,7 @@ export function useCamera() {
   }, []);
 
   const attachStream = useCallback((stream: MediaStream) => {
+    streamRef.current = stream;
     if (videoRef.current) {
       videoRef.current.srcObject = stream;
       videoRef.current.onloadedmetadata = () => setIsReady(true);
@@ -29,8 +31,7 @@ export function useCamera() {
   }, [getCameraStream, attachStream]);
 
   const stopCamera = useCallback(() => {
-    const stream = videoRef.current?.srcObject as MediaStream;
-    stream?.getTracks().forEach(track => track.stop());
+    streamRef.current?.getTracks().forEach(track => track.stop());
   }, []);
 
   useEffect(() => {

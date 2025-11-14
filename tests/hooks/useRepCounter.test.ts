@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
 import { renderHook } from '@testing-library/react';
 import { useRepCounter } from '@/hooks/useRepCounter';
 import {
@@ -7,6 +7,13 @@ import {
 } from '../mockData/poses';
 
 describe('hooks/useRepCounter', () => {
+  beforeEach(() => {
+    vi.useFakeTimers();
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
+  });
   describe('initialization', () => {
     it('should initialize with zero count', () => {
       const { result } = renderHook(() =>
@@ -61,6 +68,7 @@ describe('hooks/useRepCounter', () => {
       );
 
       rerender({ pose: mockSquatTopPose });
+      vi.advanceTimersByTime(150);
       rerender({ pose: mockSquatBottomPose });
 
       expect(result.current.state).toBe('bottom');
@@ -73,7 +81,9 @@ describe('hooks/useRepCounter', () => {
       );
 
       rerender({ pose: mockSquatTopPose });
+      vi.advanceTimersByTime(150);
       rerender({ pose: mockSquatBottomPose });
+      vi.advanceTimersByTime(150);
       rerender({ pose: mockSquatTopPose });
 
       expect(result.current.count).toBeGreaterThanOrEqual(1);
