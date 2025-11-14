@@ -7,18 +7,30 @@ let cachedDetector: PoseDetector | null = null;
 let backendInitialized = false;
 
 async function initializeBackend(): Promise<void> {
-  if (backendInitialized) return;
+  if (backendInitialized) {
+    console.log('[Kinetic AI] Backend already initialized:', tf.getBackend());
+    return;
+  }
 
   console.log('[Kinetic AI] Initializing TensorFlow.js backend...');
 
   try {
+    // Force WebGL backend only
     await tf.setBackend('webgl');
     await tf.ready();
+
+    const currentBackend = tf.getBackend();
     backendInitialized = true;
-    console.log('[Kinetic AI] Backend initialized successfully:', tf.getBackend());
+
+    console.log('[Kinetic AI] Backend initialized successfully:', currentBackend);
+
+    if (currentBackend !== 'webgl') {
+      console.warn('[Kinetic AI] Expected webgl backend but got:', currentBackend);
+    }
   } catch (error) {
     console.error('[Kinetic AI] Backend initialization failed:', error);
-    throw new Error('Failed to initialize TensorFlow.js backend');
+    console.error('[Kinetic AI] Make sure your browser supports WebGL: https://get.webgl.org/');
+    throw new Error('Failed to initialize TensorFlow.js WebGL backend. Please check browser compatibility.');
   }
 }
 

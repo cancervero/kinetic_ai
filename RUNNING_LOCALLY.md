@@ -73,7 +73,22 @@ Cuando abras la aplicación:
 
 **Posibles problemas**:
 
-#### A) Error de WebGL
+#### A) Error de inicialización de backend
+```
+Error: The highest priority backend 'webgpu' has not yet been initialized
+```
+
+**Causa**: Este error ocurre cuando el paquete WebGPU está instalado pero no se inicializa correctamente.
+
+**Solución**: Este problema ya está resuelto en la versión actual. Si lo ves:
+```bash
+# Asegúrate de tener las dependencias correctas
+npm install
+```
+
+La aplicación ahora usa solo WebGL (no WebGPU) que es más compatible.
+
+#### B) Error de WebGL
 ```
 Error: Backend 'webgl' has not been registered
 ```
@@ -83,7 +98,7 @@ Error: Backend 'webgl' has not been registered
 - Prueba con otro navegador (Chrome o Edge recomendados)
 - Actualiza tus drivers de gráficos
 
-#### B) Error de red/CORS
+#### C) Error de red/CORS
 ```
 Failed to fetch model
 ```
@@ -93,7 +108,7 @@ Failed to fetch model
 - Desactiva extensiones del navegador (adblockers, VPN) temporalmente
 - Limpia la caché del navegador
 
-#### C) Error de permisos de cámara
+#### D) Error de permisos de cámara
 ```
 Permission denied
 ```
