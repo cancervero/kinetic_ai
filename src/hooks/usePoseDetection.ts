@@ -30,14 +30,17 @@ export function usePoseDetection(
 
   const initDetector = useCallback(async () => {
     try {
+      console.log('[usePoseDetection] Starting detector initialization...');
       detectorRef.current = await loadDetector({
         backend: 'movenet',
         modelType: 'lightning'
       });
+      console.log('[usePoseDetection] Detector loaded, starting detection loop');
       setLoading(false);
       startDetection();
     } catch (err) {
-      console.error('Detector init failed:', err);
+      console.error('[usePoseDetection] Detector init failed:', err);
+      setLoading(false); // Stop showing loading indicator on error
     }
   }, [startDetection]);
 

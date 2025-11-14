@@ -1,7 +1,8 @@
 import { useState, useRef } from 'react';
-import { CameraFeed, Skeleton, RepCounter } from '@/components';
+import { CameraFeed, PoseOverlayCanvas, RepCounter } from '@/components';
 import { usePoseDetection, useRepCounter } from '@/hooks';
 import { ExerciseType } from '@/lib/rep';
+import { SKELETON_EDGES } from '@/lib/pose/rendering';
 
 export function App() {
   const [exercise, setExercise] = useState<ExerciseType>('squat');
@@ -21,12 +22,18 @@ export function App() {
     <div className="app">
       <Header />
       <ExerciseSelector current={exercise} onChange={setExercise} />
-      <div className="video-container">
+      <div className="video-container" style={{ position: 'relative' }}>
         <CameraFeed
           onVideoRef={handleVideoRef}
           onReady={setIsReady}
         />
-        <Skeleton pose={pose} width={640} height={480} />
+        {pose && (
+          <PoseOverlayCanvas
+            keypoints={pose.keypoints}
+            edges={SKELETON_EDGES}
+            videoRef={videoRef}
+          />
+        )}
       </div>
       <RepCounter repCount={repCount} exercise={exercise} />
       {loading && <LoadingIndicator />}
