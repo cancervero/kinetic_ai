@@ -26,3 +26,15 @@ export function getKeypointByName(
 export function distance(a: Keypoint, b: Keypoint): number {
   return Math.sqrt(Math.pow(b.x - a.x, 2) + Math.pow(b.y - a.y, 2));
 }
+
+export function calculateKneeAngle(keypoints: Keypoint[]): number {
+  const leftHip = getKeypointByName(keypoints, 'left_hip');
+  const leftKnee = getKeypointByName(keypoints, 'left_knee');
+  const leftAnkle = getKeypointByName(keypoints, 'left_ankle');
+
+  if (!leftHip || !leftKnee || !leftAnkle) {
+    return 180;
+  }
+
+  return calculateAngle(leftHip, leftKnee, leftAnkle);
+}
