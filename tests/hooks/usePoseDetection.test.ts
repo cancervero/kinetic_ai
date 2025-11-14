@@ -22,11 +22,8 @@ vi.mock('@/lib/pose', () => {
 describe('hooks/usePoseDetection', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    // Mock requestAnimationFrame to prevent infinite loops
-    vi.stubGlobal('requestAnimationFrame', vi.fn((cb) => {
-      setTimeout(cb, 16);
-      return 1;
-    }));
+    // Mock requestAnimationFrame to prevent infinite loops - don't execute callback
+    vi.stubGlobal('requestAnimationFrame', vi.fn(() => 1));
     vi.stubGlobal('cancelAnimationFrame', vi.fn());
   });
 
