@@ -1,0 +1,138 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  background: #000;
+  color: #fff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+}
+
+.app {
+  text-align: center;
+  max-width: 800px;
+  padding: 20px;
+}
+
+.app-header {
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+  color: #00ff00;
+}
+
+.exercise-selector {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  margin-bottom: 2rem;
+}
+
+.exercise-selector button {
+  padding: 0.75rem 1.5rem;
+  background: #222;
+  color: #fff;
+  border: 2px solid #00ff00;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: all 0.2s;
+}
+
+.exercise-selector button:hover:not(:disabled) {
+  background: #00ff00;
+  color: #000;
+}
+
+.exercise-selector button:disabled {
+  background: #00ff00;
+  color: #000;
+  cursor: default;
+}
+
+.video-container {
+  position: relative;
+  width: 640px;
+  height: 480px;
+  margin: 0 auto;
+  border: 2px solid #00ff00;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.camera-feed {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transform: scaleX(-1);
+}
+
+.skeleton-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+}
+
+.rep-counter {
+  margin-top: 2rem;
+}
+
+.exercise-name {
+  font-size: 1.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.count-display {
+  font-size: 5rem;
+  font-weight: bold;
+  color: #00ff00;
+  text-shadow: 0 0 20px rgba(0, 255, 0, 0.5);
+}
+
+.state-indicator {
+  margin-top: 1rem;
+  font-size: 1rem;
+}
+
+.state-top {
+  color: #00ff00;
+}
+
+.state-bottom {
+  color: #ff6b00;
+}
+
+.state-idle {
+  color: #666;
+}
+
+.loading {
+  margin-top: 1rem;
+  color: #00ff00;
+  font-size: 1.2rem;
+}
+
+.error {
+  color: #ff0000;
+  padding: 1rem;
+  background: rgba(255, 0, 0, 0.1);
+  border-radius: 8px;
+}
+
+@media (max-width: 768px) {
+  .video-container {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 4 / 3;
+  }
+
+  .count-display {
+    font-size: 3rem;
+  }
+}
