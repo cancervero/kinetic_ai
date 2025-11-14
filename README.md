@@ -32,6 +32,24 @@ npm run build
 npm run preview
 ```
 
+## Testing
+
+```bash
+# Ejecutar todos los tests
+npm test
+
+# Tests con coverage
+npm run test:coverage
+
+# Tests con UI interactiva
+npm run test:ui
+
+# Tests en modo CI (run once)
+npm run test:run
+```
+
+Ver [docs/testing.md](./docs/testing.md) para documentación completa de testing.
+
 ## Estructura del Proyecto
 
 ```
