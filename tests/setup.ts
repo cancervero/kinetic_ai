@@ -10,7 +10,7 @@ global.navigator.mediaDevices = {
   addEventListener: vi.fn(),
   removeEventListener: vi.fn(),
   dispatchEvent: vi.fn()
-} as any;
+} as MediaDevices;
 
 // Mock HTMLVideoElement
 Object.defineProperty(HTMLVideoElement.prototype, 'readyState', {

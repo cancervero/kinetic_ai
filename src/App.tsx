@@ -11,13 +11,19 @@ export function App() {
   const { pose, loading } = usePoseDetection(videoRef, isReady);
   const repCount = useRepCounter(pose, exercise);
 
+  const handleVideoRef = (ref: React.RefObject<HTMLVideoElement>) => {
+    if (ref.current && videoRef.current !== ref.current) {
+      (videoRef as React.MutableRefObject<HTMLVideoElement | null>).current = ref.current;
+    }
+  };
+
   return (
     <div className="app">
       <Header />
       <ExerciseSelector current={exercise} onChange={setExercise} />
       <div className="video-container">
         <CameraFeed
-          onVideoRef={ref => (videoRef.current = ref.current)}
+          onVideoRef={handleVideoRef}
           onReady={setIsReady}
         />
         <Skeleton pose={pose} width={640} height={480} />

@@ -16,6 +16,6 @@ export interface TTSConfig {
   volume: number;
 }
 
-export function speak(text: string): void {
+export function speak(_text: string): void {
   // TODO: Implement TTS functionality
 }

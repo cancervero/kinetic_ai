@@ -9,13 +9,13 @@ export async function loadMoveNet(
 ): Promise<PoseDetector> {
   if (cachedDetector) return cachedDetector;
 
+  const modelTypeKey = modelType === 'lightning'
+    ? poseDetection.movenet.modelType.SINGLEPOSE_LIGHTNING
+    : poseDetection.movenet.modelType.SINGLEPOSE_THUNDER;
+
   const detector = await poseDetection.createDetector(
     poseDetection.SupportedModels.MoveNet,
-    {
-      modelType: poseDetection.movenet.modelType[
-        modelType.toUpperCase() as 'LIGHTNING' | 'THUNDER'
-      ]
-    }
+    { modelType: modelTypeKey }
   );
 
   cachedDetector = detector as PoseDetector;
