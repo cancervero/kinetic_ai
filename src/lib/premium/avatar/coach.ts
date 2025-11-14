@@ -10,7 +10,7 @@
  */
 
 export interface AvatarState {
-  pose: any;
+  pose: unknown;
   animation: string;
 }
 

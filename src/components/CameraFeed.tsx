@@ -1,4 +1,5 @@
 import { useCamera } from '@/hooks';
+import { useEffect } from 'react';
 
 interface CameraFeedProps {
   onVideoRef?: (ref: React.RefObject<HTMLVideoElement>) => void;
@@ -8,8 +9,13 @@ interface CameraFeedProps {
 export function CameraFeed({ onVideoRef, onReady }: CameraFeedProps) {
   const { videoRef, isReady, error } = useCamera();
 
-  if (onVideoRef) onVideoRef(videoRef);
-  if (onReady && isReady) onReady(isReady);
+  useEffect(() => {
+    if (onVideoRef) onVideoRef(videoRef);
+  }, [videoRef, onVideoRef]);
+
+  useEffect(() => {
+    if (onReady && isReady) onReady(isReady);
+  }, [isReady, onReady]);
 
   if (error) return <ErrorDisplay message={error} />;
 

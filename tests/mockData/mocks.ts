@@ -30,12 +30,12 @@ export const createMockStream = (): MediaStream => {
     id: 'mock-track',
     kind: 'video',
     label: 'mock camera'
-  } as any;
+  } as MediaStreamTrack;
 
   return {
     getTracks: vi.fn(() => [track]),
     getVideoTracks: vi.fn(() => [track]),
     getAudioTracks: vi.fn(() => []),
     id: 'mock-stream'
-  } as any;
+  } as MediaStream;
 };
