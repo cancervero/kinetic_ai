@@ -97,7 +97,7 @@ export function App() {
       const rect = videoRef.current.getBoundingClientRect();
       return { width: rect.width, height: rect.height };
     }
-    return { width: 640, height: 480 };
+    return { width: window.innerWidth, height: window.innerHeight };
   };
 
   if (appState === 'profile-selection') {
@@ -108,7 +108,7 @@ export function App() {
     const { width, height } = getVideoSize();
     return (
       <div className="app">
-        <div className="video-container" style={{ position: 'relative' }}>
+        <div className="video-container">
           <CameraFeed onVideoRef={handleVideoRef} onReady={setIsReady} />
           {pose && (
             <>
@@ -144,7 +144,7 @@ export function App() {
   return (
     <div className="app">
       <Header profile={currentProfile} onChangeProfile={handleChangeProfile} />
-      <div className="video-container" style={{ position: 'relative' }}>
+      <div className="video-container">
         <CameraFeed onVideoRef={handleVideoRef} onReady={setIsReady} />
         {pose && (
           <PoseOverlayCanvas

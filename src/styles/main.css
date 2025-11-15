@@ -8,61 +8,66 @@ body {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   background: #000;
   color: #fff;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 100vh;
+  overflow: hidden;
 }
 
+/* Fullscreen App Layout */
 .app {
-  text-align: center;
-  max-width: 800px;
-  padding: 20px;
-}
-
-.app-header {
-  font-size: 2.5rem;
-  margin-bottom: 1rem;
-  color: #00ff00;
-}
-
-.exercise-selector {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
   display: flex;
-  gap: 1rem;
-  justify-content: center;
-  margin-bottom: 2rem;
+  flex-direction: column;
 }
 
-.exercise-selector button {
-  padding: 0.75rem 1.5rem;
-  background: #222;
-  color: #fff;
-  border: 2px solid #00ff00;
-  border-radius: 8px;
-  cursor: pointer;
-  font-size: 1rem;
-  transition: all 0.2s;
+/* Header Overlay */
+.app-header {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 20;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 2rem;
+  background: linear-gradient(180deg, rgba(0,0,0,0.8) 0%, transparent 100%);
 }
 
-.exercise-selector button:hover:not(:disabled) {
-  background: #00ff00;
-  color: #000;
+.app-header h1 {
+  font-size: 3rem;
+  color: #00ff00;
+  text-shadow: 0 0 20px rgba(0, 255, 0, 0.5);
 }
 
-.exercise-selector button:disabled {
-  background: #00ff00;
-  color: #000;
-  cursor: default;
-}
-
-.video-container {
-  position: relative;
-  width: 640px;
-  height: 480px;
-  margin: 0 auto;
+.app-header .profile-button {
+  padding: 1rem 2rem;
+  background: rgba(0, 255, 0, 0.1);
   border: 2px solid #00ff00;
   border-radius: 12px;
-  overflow: hidden;
+  color: #00ff00;
+  font-size: 1.5rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.app-header .profile-button:hover {
+  background: #00ff00;
+  color: #000;
+  transform: scale(1.05);
+}
+
+/* Fullscreen Video Container */
+.video-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 1;
 }
 
 .camera-feed {
@@ -72,356 +77,408 @@ body {
   transform: scaleX(-1);
 }
 
-.skeleton-overlay {
-  position: absolute;
-  top: 0;
-  left: 0;
+/* Rep Counter Overlay */
+.rep-counter {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 15;
+  text-align: center;
   pointer-events: none;
 }
 
-.rep-counter {
-  margin-top: 2rem;
+.count-display {
+  font-size: 20rem;
+  font-weight: bold;
+  color: #00ff00;
+  text-shadow:
+    0 0 40px rgba(0, 255, 0, 0.8),
+    0 0 80px rgba(0, 255, 0, 0.5),
+    0 0 120px rgba(0, 255, 0, 0.3);
+  line-height: 1;
 }
 
 .exercise-name {
-  font-size: 1.5rem;
-  margin-bottom: 0.5rem;
-}
-
-.count-display {
-  font-size: 5rem;
-  font-weight: bold;
+  font-size: 3rem;
+  margin-bottom: 1rem;
   color: #00ff00;
   text-shadow: 0 0 20px rgba(0, 255, 0, 0.5);
 }
 
 .state-indicator {
-  margin-top: 1rem;
-  font-size: 1rem;
+  margin-top: 2rem;
+  font-size: 2.5rem;
+  font-weight: bold;
+  text-transform: uppercase;
 }
 
 .state-top {
   color: #00ff00;
+  text-shadow: 0 0 20px rgba(0, 255, 0, 0.8);
 }
 
 .state-bottom {
   color: #ff6b00;
+  text-shadow: 0 0 20px rgba(255, 107, 0, 0.8);
 }
 
 .state-idle {
   color: #666;
 }
 
+/* Loading Indicator */
 .loading {
-  margin-top: 1rem;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 100;
+  font-size: 3rem;
   color: #00ff00;
-  font-size: 1.2rem;
+  text-shadow: 0 0 30px rgba(0, 255, 0, 0.8);
+  animation: pulse 2s infinite;
 }
 
-.error {
-  color: #ff0000;
-  padding: 1rem;
-  background: rgba(255, 0, 0, 0.1);
-  border-radius: 8px;
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
 }
 
-/* Profile Selection */
+/* Profile Selection - Fullscreen */
 .profile-selection {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
   display: flex;
   justify-content: center;
   align-items: center;
-  min-height: 100vh;
-  padding: 20px;
+  background: #000;
+  padding: 2rem;
 }
 
 .profile-card {
-  background: #111;
-  border: 2px solid #00ff00;
-  border-radius: 12px;
-  padding: 2rem;
-  max-width: 400px;
+  background: rgba(17, 17, 17, 0.95);
+  border: 3px solid #00ff00;
+  border-radius: 20px;
+  padding: 4rem;
+  max-width: 800px;
   width: 100%;
+  box-shadow: 0 0 40px rgba(0, 255, 0, 0.3);
 }
 
 .profile-card h1 {
   color: #00ff00;
-  font-size: 2.5rem;
-  margin-bottom: 0.5rem;
+  font-size: 5rem;
+  margin-bottom: 1rem;
+  text-shadow: 0 0 30px rgba(0, 255, 0, 0.5);
 }
 
 .profile-card .subtitle {
   color: #888;
-  margin-bottom: 2rem;
+  font-size: 2rem;
+  margin-bottom: 3rem;
 }
 
 .profile-list {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: 1.5rem;
 }
 
 .profile-button {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 1rem;
+  padding: 2rem;
   background: #222;
-  border: 2px solid #00ff00;
-  border-radius: 8px;
+  border: 3px solid #00ff00;
+  border-radius: 12px;
   color: #fff;
+  font-size: 2rem;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all 0.3s;
 }
 
 .profile-button:hover {
   background: #00ff00;
   color: #000;
+  transform: scale(1.02);
 }
 
 .profile-alias {
-  font-size: 1.2rem;
+  font-size: 2.5rem;
   font-weight: bold;
 }
 
 .calibrated-badge {
   color: #00ff00;
-  font-size: 0.9rem;
+  font-size: 1.5rem;
 }
 
 .create-new-button {
-  padding: 1rem;
+  padding: 2rem;
   background: transparent;
-  border: 2px dashed #00ff00;
-  border-radius: 8px;
+  border: 3px dashed #00ff00;
+  border-radius: 12px;
   color: #00ff00;
+  font-size: 2rem;
   cursor: pointer;
-  margin-top: 1rem;
-  transition: all 0.2s;
+  margin-top: 1.5rem;
+  transition: all 0.3s;
 }
 
 .create-new-button:hover {
   background: rgba(0, 255, 0, 0.1);
+  transform: scale(1.02);
 }
 
 .create-form {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: 2rem;
 }
 
 .alias-input {
-  padding: 1rem;
+  padding: 2rem;
   background: #222;
-  border: 2px solid #00ff00;
-  border-radius: 8px;
+  border: 3px solid #00ff00;
+  border-radius: 12px;
   color: #fff;
-  font-size: 1rem;
+  font-size: 2.5rem;
+  text-align: center;
 }
 
 .alias-input:focus {
   outline: none;
   border-color: #00ff00;
-  box-shadow: 0 0 10px rgba(0, 255, 0, 0.3);
+  box-shadow: 0 0 20px rgba(0, 255, 0, 0.5);
 }
 
 .error-message {
   color: #ff4444;
-  font-size: 0.9rem;
+  font-size: 1.8rem;
+  text-shadow: 0 0 10px rgba(255, 68, 68, 0.5);
 }
 
 .button-group {
   display: flex;
-  gap: 1rem;
+  gap: 2rem;
 }
 
 .primary-button {
   flex: 1;
-  padding: 1rem;
+  padding: 2rem;
   background: #00ff00;
   color: #000;
   border: none;
-  border-radius: 8px;
+  border-radius: 12px;
+  font-size: 2rem;
   font-weight: bold;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all 0.3s;
 }
 
 .primary-button:hover {
   background: #00dd00;
+  transform: scale(1.05);
 }
 
 .secondary-button {
   flex: 1;
-  padding: 1rem;
+  padding: 2rem;
   background: transparent;
-  border: 2px solid #666;
-  border-radius: 8px;
+  border: 3px solid #666;
+  border-radius: 12px;
   color: #666;
+  font-size: 2rem;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all 0.3s;
 }
 
 .secondary-button:hover {
   border-color: #888;
   color: #888;
+  transform: scale(1.05);
 }
 
-/* Calibration Flow */
+/* Calibration Flow - Fullscreen Overlay */
 .calibration-overlay {
-  position: absolute;
+  position: fixed;
   top: 0;
   left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.8);
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.7);
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
-  z-index: 10;
+  z-index: 50;
 }
 
 .calibration-card {
-  background: #111;
-  border: 2px solid #00ff00;
-  border-radius: 12px;
-  padding: 2rem;
-  max-width: 400px;
+  background: rgba(17, 17, 17, 0.95);
+  border: 3px solid #00ff00;
+  border-radius: 20px;
+  padding: 4rem;
+  max-width: 900px;
+  width: 90%;
   text-align: center;
+  box-shadow: 0 0 60px rgba(0, 255, 0, 0.4);
 }
 
 .calibration-card h2 {
   color: #00ff00;
-  margin-bottom: 1rem;
+  font-size: 4rem;
+  margin-bottom: 2rem;
+  text-shadow: 0 0 30px rgba(0, 255, 0, 0.6);
 }
 
 .calibration-card .feedback {
-  font-size: 1.1rem;
-  margin-bottom: 1rem;
-  min-height: 3rem;
+  font-size: 3rem;
+  margin-bottom: 3rem;
+  min-height: 4rem;
+  line-height: 1.4;
+  font-weight: 500;
 }
 
 .progress-bar {
   width: 100%;
-  height: 8px;
+  height: 30px;
   background: #333;
-  border-radius: 4px;
+  border-radius: 15px;
   overflow: hidden;
-  margin-bottom: 1rem;
+  margin-bottom: 2rem;
+  box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.5);
 }
 
 .progress-fill {
   height: 100%;
-  background: #00ff00;
+  background: linear-gradient(90deg, #00ff00, #00dd00);
   transition: width 0.3s;
+  box-shadow: 0 0 20px rgba(0, 255, 0, 0.6);
 }
 
 .success-icon {
-  font-size: 4rem;
+  font-size: 10rem;
   color: #00ff00;
-  margin: 1rem 0;
+  margin: 2rem 0;
+  animation: successPulse 0.5s ease-out;
+  text-shadow: 0 0 40px rgba(0, 255, 0, 0.8);
+}
+
+@keyframes successPulse {
+  0% { transform: scale(0); }
+  50% { transform: scale(1.2); }
+  100% { transform: scale(1); }
 }
 
 .cancel-button {
-  padding: 0.75rem 1.5rem;
+  padding: 1.5rem 3rem;
   background: transparent;
-  border: 2px solid #666;
-  border-radius: 8px;
+  border: 3px solid #666;
+  border-radius: 12px;
   color: #666;
+  font-size: 1.8rem;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all 0.3s;
 }
 
 .cancel-button:hover {
   border-color: #888;
   color: #888;
+  transform: scale(1.05);
 }
 
-/* Exercise Selection */
+/* Exercise Selection - Fullscreen */
 .exercise-selection {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
   display: flex;
   justify-content: center;
   align-items: center;
-  min-height: 100vh;
-  padding: 20px;
+  background: #000;
+  padding: 2rem;
 }
 
 .exercise-card {
-  background: #111;
-  border: 2px solid #00ff00;
-  border-radius: 12px;
-  padding: 2rem;
-  max-width: 500px;
+  background: rgba(17, 17, 17, 0.95);
+  border: 3px solid #00ff00;
+  border-radius: 20px;
+  padding: 4rem;
+  max-width: 1000px;
   width: 100%;
+  box-shadow: 0 0 40px rgba(0, 255, 0, 0.3);
 }
 
 .exercise-card h2 {
   color: #00ff00;
-  margin-bottom: 2rem;
+  font-size: 4rem;
+  margin-bottom: 3rem;
+  text-shadow: 0 0 30px rgba(0, 255, 0, 0.5);
 }
 
 .exercise-list {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
-  margin-bottom: 2rem;
+  gap: 2rem;
+  margin-bottom: 3rem;
 }
 
 .exercise-button {
   display: flex;
   align-items: center;
-  gap: 1rem;
-  padding: 1.5rem;
+  gap: 2rem;
+  padding: 3rem;
   background: #222;
-  border: 2px solid #00ff00;
-  border-radius: 8px;
+  border: 3px solid #00ff00;
+  border-radius: 16px;
   color: #fff;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all 0.3s;
   text-align: left;
 }
 
 .exercise-button:hover {
   background: #00ff00;
   color: #000;
+  transform: scale(1.03);
 }
 
 .exercise-icon {
-  font-size: 2rem;
+  font-size: 5rem;
 }
 
 .exercise-info h3 {
-  margin-bottom: 0.25rem;
+  font-size: 3rem;
+  margin-bottom: 0.5rem;
 }
 
 .exercise-info p {
-  font-size: 0.9rem;
+  font-size: 1.8rem;
   opacity: 0.8;
 }
 
 .change-profile-button {
   width: 100%;
-  padding: 0.75rem;
+  padding: 1.5rem;
   background: transparent;
-  border: 2px solid #666;
-  border-radius: 8px;
+  border: 3px solid #666;
+  border-radius: 12px;
   color: #666;
+  font-size: 1.8rem;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all 0.3s;
 }
 
 .change-profile-button:hover {
   border-color: #888;
   color: #888;
-}
-
-@media (max-width: 768px) {
-  .video-container {
-    width: 100%;
-    height: auto;
-    aspect-ratio: 4 / 3;
-  }
-
-  .count-display {
-    font-size: 3rem;
-  }
+  transform: scale(1.02);
 }

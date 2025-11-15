@@ -6,6 +6,7 @@ import {
   CalibrationSession,
   type CalibrationProfile,
 } from '@/lib/pose/calibration';
+import { VoiceInstructor } from '@/lib/speech/text-to-speech';
 
 interface CalibrationFlowProps {
   pose: Pose | null;
@@ -31,6 +32,16 @@ export function CalibrationFlow({
 
   const gestureTracker = useRef(new GestureTracker(1500));
   const calibrationSession = useRef(new CalibrationSession());
+  const voiceInstructor = useRef(new VoiceInstructor());
+
+  useEffect(() => {
+    const instructor = voiceInstructor.current;
+    instructor.announce(
+      'Calibración iniciada. Colócate frente a la cámara',
+      true
+    );
+    return () => instructor.stop();
+  }, []);
 
   useEffect(() => {
     if (!pose || !pose.keypoints) return;
@@ -41,9 +52,14 @@ export function CalibrationFlow({
     if (step === 'positioning') {
       const detection = detectUser(keypoints, videoWidth, videoHeight);
       setFeedback(detection.feedback);
+      voiceInstructor.current.announce(detection.feedback);
 
       if (detection.isDetected) {
         setStep('gesture');
+        voiceInstructor.current.announce(
+          'Perfecto. Ahora levanta ambos brazos formando una Y',
+          true
+        );
       }
     } else if (step === 'gesture') {
       const gestureDetected = gestureTracker.current.update(
@@ -56,11 +72,14 @@ export function CalibrationFlow({
       if (gestureDetected) {
         calibrationSession.current.start();
         setStep('calibrating');
-        setFeedback('¡Calibrando! Mantente quieto...');
+        const msg = 'Calibrando. Mantente quieto en posición de pie';
+        setFeedback(msg);
+        voiceInstructor.current.announce(msg, true);
       } else if (progress === 0) {
-        setFeedback('Levanta ambos brazos formando una "Y" para iniciar');
-      } else {
+        setFeedback('Levanta ambos brazos en forma de Y');
+      } else if (progress > 0.5) {
         setFeedback('Mantén la posición...');
+        voiceInstructor.current.announce('Mantén la posición');
       }
     } else if (step === 'calibrating') {
       const shouldFinish = calibrationSession.current.addFrame(keypoints);
@@ -71,13 +90,20 @@ export function CalibrationFlow({
         const profile = calibrationSession.current.finish();
         if (profile) {
           setStep('complete');
-          setFeedback('¡Calibración completada!');
+          const msg = '¡Calibración completada exitosamente!';
+          setFeedback(msg);
+          voiceInstructor.current.announce(msg, true);
           playBeep();
-          setTimeout(() => onComplete(profile), 1000);
+          setTimeout(() => onComplete(profile), 2000);
         }
       }
     }
   }, [pose, step, videoWidth, videoHeight, onComplete]);
+
+  const handleCancel = () => {
+    voiceInstructor.current.stop();
+    onCancel();
+  };
 
   return (
     <div className="calibration-overlay">
@@ -103,11 +129,9 @@ export function CalibrationFlow({
           </div>
         )}
 
-        {step === 'complete' && (
-          <div className="success-icon">✓</div>
-        )}
+        {step === 'complete' && <div className="success-icon">✓</div>}
 
-        <button onClick={onCancel} className="cancel-button">
+        <button onClick={handleCancel} className="cancel-button">
           Cancelar
         </button>
       </div>
